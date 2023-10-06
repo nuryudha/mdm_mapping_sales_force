@@ -1,0 +1,53 @@
+<div class="container-fluid">
+  <div class="d-flex flex-row-reverse mt-3">
+    <button
+      mat-raised-button
+      color="primary"
+      style="height: 50px; font-size: 18px"
+    >
+      <mat-icon>add</mat-icon>
+      Create New
+    </button>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <mat-card class="toCenter" style="width: 100%">
+        <div class="d-flex" style="height: 80px">
+          <div class="me-auto p-2">
+            <h1 class="ms-3 mt-3 title">Job Master</h1>
+          </div>
+          <div class="p-2">
+            <mat-form-field
+              appearance="outline"
+              style="width: 350px"
+              class="mt-1"
+            >
+              <mat-label>
+                <mat-icon class="tengah">search</mat-icon>
+                Search
+              </mat-label>
+              <input
+                matInput
+                type="text"
+                style="width: 80%; height: 23px"
+                oninput="this.value = this.value.toUpperCase()"
+              />
+            </mat-form-field>
+          </div>
+          <div class="mt-3">
+            <button
+              style="height: 50px; color: white; width: 130px; font-size: 18px"
+              color="accent"
+              class="me-4 ms-2 btnYellow"
+              mat-button
+            >
+              <mat-icon>search</mat-icon>
+              Search
+            </button>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>
