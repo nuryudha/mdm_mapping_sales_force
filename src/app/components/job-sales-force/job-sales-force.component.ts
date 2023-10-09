@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { DetailSalesComponent } from './detail-sales/detail-sales.component';
@@ -6,6 +6,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import Swal from 'sweetalert2';
 import { Title } from '@angular/platform-browser';
 import { listAllJob } from 'src/app/models/job-sales-force-models/job-sales-force-models';
+import { MainService } from 'src/app/services/main.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-job-sales-force',
@@ -13,28 +15,26 @@ import { listAllJob } from 'src/app/models/job-sales-force-models/job-sales-forc
   styleUrls: ['./job-sales-force.component.css'],
 })
 export class JobSalesForceComponent implements OnInit {
-  constructor(private title: Title, private dialog: MatDialog) {}
+  constructor(
+    private title: Title,
+    private dialog: MatDialog,
+    private services: MainService
+  ) {}
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource(
       this.dataYangDitampilkan_ListAllJob
     );
     this.title.setTitle('Mapping Sales Force');
+    this.getListAllJob();
   }
+
+  // @ViewChild(MatPaginator) matPaginator!
 
   displayedColumns: string[] = ['jobCode', 'jobDesc', 'action'];
 
   dataSource!: MatTableDataSource<listAllJob>;
-  dataYangDitampilkan_ListAllJob: listAllJob[] = [
-    {
-      emplJobCode: 'JOB001',
-      emplJobDesc: 'Deskripsi pekerjaan 1',
-    },
-    {
-      emplJobCode: 'JOB002',
-      emplJobDesc: 'Deskripsi pekerjaan 2',
-    },
-  ];
+  dataYangDitampilkan_ListAllJob: listAllJob[] = [];
 
   detailJob(element: any) {
     const dialogConfig = new MatDialogConfig();
@@ -49,11 +49,34 @@ export class JobSalesForceComponent implements OnInit {
       .subscribe(
         (res) => {
           console.log(res);
-          console.log(res.body.message);
+          if (res == undefined) {
+            console.log('data tidak ada');
+          }
         },
         (err) => {
           console.log(err);
         }
       );
+  }
+
+  getListAllJob() {
+    this.dataYangDitampilkan_ListAllJob = []; // biar ga duplikasi saat di refresh
+    this.services.getJob('job').subscribe(
+      (res) => {
+        console.log(res);
+        res.body.data.forEach((element: any) => {
+          this.dataYangDitampilkan_ListAllJob.push({
+            emplJobCode: element.emplJobCode,
+            emplJobDesc: element.emplJobDesc,
+          });
+        });
+        this.dataSource = new MatTableDataSource(
+          this.dataYangDitampilkan_ListAllJob
+        );
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 }
