@@ -107,6 +107,8 @@ mat-form-field {
 
 ::ng-deep .grey-input .mat-form-field-infix {
   background-color: rgb(245, 245, 245);
+  font-weight: 500;
+  color: #000000;
   padding-left: 10px;
   /* border-radius: 4px 4px 0 0; */
 }
@@ -210,19 +212,21 @@ th.text-header {
 }
 
 .button-aktifkan {
-  color: #0d9c00;
+  color: #ffffff;
+  background-color: #0d9c00;
 }
 
 .button-aktifkan:hover {
-  background-color: #88db81;
+  background-color: #0a7400;
 }
 
 .button-non-aktifkan {
-  color: #f44a3e;
+  color: #ffffff;
+  background-color: #f44a3e;
 }
 
 .button-non-aktifkan:hover {
-  background-color: #ff9f98;
+  background-color: #c4392f;
 }
 
 .button-abuabu {
@@ -250,4 +254,8 @@ th.text-header {
 }
 .btnClose:hover {
   background-color: #c4392f;
+}
+
+.custom-dialog {
+  overflow: auto; /* Munculkan scrollbar jika diperlukan */
 }

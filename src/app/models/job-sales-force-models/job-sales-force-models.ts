@@ -1,4 +1,6 @@
 export interface listAllJob {
-  emplJobCode: string;
-  emplJobDesc: any;
+  jobCode: string;
+  jobDesc: any;
+  comId: string;
+  jobStatus: string;
 }

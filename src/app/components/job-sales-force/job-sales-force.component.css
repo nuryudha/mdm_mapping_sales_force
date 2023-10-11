@@ -118,3 +118,7 @@ th.text-header {
   background-color: rgb(250, 228, 228);
   pointer-events: none;
 }
+
+.custom-dialog {
+  overflow: auto; /* Munculkan scrollbar jika diperlukan */
+}

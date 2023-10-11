@@ -1,8 +1,9 @@
-export interface listSalesForce {
-  no: number;
+export interface listChannelCode {
   channelCodeDesc: string;
   channelCode: string;
+}
+
+export interface listSalesForceType {
   salesForceTypeDesc: string;
   salesForceType: string;
-  deleted: string;
 }
