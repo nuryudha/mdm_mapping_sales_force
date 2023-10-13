@@ -49,39 +49,23 @@ export class TambahMappingSalesComponent implements OnInit {
   }
 
   getDataOptionChannelCode() {
-    let arrayDataOption_ListChannelCode: listChannelCode[] = [
-      // INI HARUSNYA KOSONG  dan masuk ke service terus di foreach
-      {
-        channelCode: '01',
-        channelCodeDesc: 'DEALER',
+    this.services.getJob('jobMapping/getChannelCode').subscribe(
+      (res) => {
+        console.log(res);
+        let arrayDataOption_ListChannelCode: listChannelCode[] = [];
+        res.body.data.forEach((element: any) => {
+          arrayDataOption_ListChannelCode.push({
+            channelCode: element.channelCode,
+            channelCodeDesc: element.channelDesc,
+          });
+        });
+        this.dataOption_ListChannelCode = arrayDataOption_ListChannelCode;
+        this.filteredListChannelCode = this.dataOption_ListChannelCode;
       },
-      {
-        channelCode: '02',
-        channelCodeDesc: 'BMRI',
-      },
-      {
-        channelCode: '04',
-        channelCodeDesc: 'MITRA MANDIRI',
-      },
-      {
-        channelCode: '04',
-        channelCodeDesc: 'MUF',
-      },
-      {
-        channelCode: '07',
-        channelCodeDesc: 'GROUP CUSTOMER',
-      },
-      {
-        channelCode: '09',
-        channelCodeDesc: 'PERMATA',
-      },
-      {
-        channelCode: '08',
-        channelCodeDesc: 'RESTRUCTURE',
-      },
-    ];
-    this.dataOption_ListChannelCode = arrayDataOption_ListChannelCode;
-    this.filteredListChannelCode = this.dataOption_ListChannelCode;
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   getDataOptionSalesForce() {
@@ -160,7 +144,7 @@ export class TambahMappingSalesComponent implements OnInit {
         branchCode: '0000',
       };
       console.log(parameter);
-      this.services.postJob('job/insertMappingJob', parameter).subscribe(
+      this.services.postJob('jobMapping/insertMappingJob', parameter).subscribe(
         (res) => {
           console.log(res);
           this.dialogRef.close(res);

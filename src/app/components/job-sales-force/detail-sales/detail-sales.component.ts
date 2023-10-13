@@ -106,70 +106,72 @@ export class DetailSalesComponent implements OnInit {
     let parameter = {
       salesJobCode: this.data.jobCode,
     };
-    this.services.postJob('job/getDetailJobMapping', parameter).subscribe(
-      (res) => {
-        console.log(res);
-        res.body.data.forEach((element: any, index: number) => {
-          if (element.channelCode == '01') {
-            channelCodeDesc = 'DEALER';
-          } else if (element.channelCode == '02') {
-            channelCodeDesc = 'BMRI';
-          } else if (element.channelCode == '03') {
-            channelCodeDesc = 'MITRA MANDIRI';
-          } else if (element.channelCode == '04') {
-            channelCodeDesc = 'MUF';
-          } else if (element.channelCode == '07') {
-            channelCodeDesc = 'GROUP CUSTOMER';
-          } else if (element.channelCode == '09') {
-            channelCodeDesc = 'PERMATA';
-          } else if (element.channelCode == '08') {
-            channelCodeDesc = 'RESTRUCTURE';
-          } else {
-            channelCodeDesc = 'UNKNOWN';
-          }
+    this.services
+      .postJob('jobMapping/getDetailJobMapping', parameter)
+      .subscribe(
+        (res) => {
+          console.log(res);
+          res.body.data.forEach((element: any, index: number) => {
+            if (element.channelCode == '01') {
+              channelCodeDesc = 'DEALER';
+            } else if (element.channelCode == '02') {
+              channelCodeDesc = 'BMRI';
+            } else if (element.channelCode == '03') {
+              channelCodeDesc = 'MITRA MANDIRI';
+            } else if (element.channelCode == '04') {
+              channelCodeDesc = 'MUF';
+            } else if (element.channelCode == '07') {
+              channelCodeDesc = 'GROUP CUSTOMER';
+            } else if (element.channelCode == '09') {
+              channelCodeDesc = 'PERMATA';
+            } else if (element.channelCode == '08') {
+              channelCodeDesc = 'RESTRUCTURE';
+            } else {
+              channelCodeDesc = 'UNKNOWN';
+            }
 
-          if (element.salesForceType == '1') {
-            salesForceTypeDesc = 'INTERNAL';
-          } else if (element.salesForceType == '2') {
-            salesForceTypeDesc = 'EXTERNAL 1';
-          } else if (element.salesForceType == '3') {
-            salesForceTypeDesc = 'EXTERNAL 2';
-          } else if (element.salesForceType == '4') {
-            salesForceTypeDesc = 'MITRA';
-          } else if (element.salesForceType == '5') {
-            salesForceTypeDesc = 'EXTERNAL 3';
-          } else if (element.salesForceType == '6') {
-            salesForceTypeDesc = 'INTERNAL 2,';
-          } else if (element.salesForceType == '7') {
-            salesForceTypeDesc = 'INTERNAL 3';
-          } else {
-            salesForceTypeDesc = 'UNKNOWN';
-          }
-          this.dataYangDitampilkan_ListSalesForce.push({
-            no: index + 1,
-            channelCodeDesc: channelCodeDesc,
-            channelCode: element.channelCode,
-            salesForceTypeDesc: salesForceTypeDesc,
-            salesForceType: element.salesForceType,
-            deleted: element.deleted,
+            if (element.salesForceType == '1') {
+              salesForceTypeDesc = 'INTERNAL';
+            } else if (element.salesForceType == '2') {
+              salesForceTypeDesc = 'EXTERNAL 1';
+            } else if (element.salesForceType == '3') {
+              salesForceTypeDesc = 'EXTERNAL 2';
+            } else if (element.salesForceType == '4') {
+              salesForceTypeDesc = 'MITRA';
+            } else if (element.salesForceType == '5') {
+              salesForceTypeDesc = 'EXTERNAL 3';
+            } else if (element.salesForceType == '6') {
+              salesForceTypeDesc = 'INTERNAL 2,';
+            } else if (element.salesForceType == '7') {
+              salesForceTypeDesc = 'INTERNAL 3';
+            } else {
+              salesForceTypeDesc = 'UNKNOWN';
+            }
+            this.dataYangDitampilkan_ListSalesForce.push({
+              no: index + 1,
+              channelCodeDesc: channelCodeDesc,
+              channelCode: element.channelCode,
+              salesForceTypeDesc: salesForceTypeDesc,
+              salesForceType: element.salesForceType,
+              deleted: element.deleted,
+            });
           });
-        });
 
-        this.dataSource = new MatTableDataSource(
-          this.dataYangDitampilkan_ListSalesForce
-        );
-        this.ngAfterViewInit();
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+          this.dataSource = new MatTableDataSource(
+            this.dataYangDitampilkan_ListSalesForce
+          );
+          this.ngAfterViewInit();
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
   }
 
   changeStatusDelete(status: any) {
     let statusDelete: any;
-    if (status.deleted == 1) {
-      statusDelete = '0';
+    if (status.deleted == 0) {
+      statusDelete = '1';
       Swal.fire({
         position: 'center',
         icon: 'question',
@@ -190,8 +192,8 @@ export class DetailSalesComponent implements OnInit {
         } else {
         }
       });
-    } else if (status.deleted == 0) {
-      statusDelete = '1';
+    } else if (status.deleted == 1) {
+      statusDelete = '0';
       Swal.fire({
         position: 'center',
         icon: 'question',
@@ -235,38 +237,40 @@ export class DetailSalesComponent implements OnInit {
       ipAddr: this.ipAddress,
       branchCode: '0000',
     };
-    this.services.postJob('job/activationMappingJob', parameter).subscribe(
-      (res) => {
-        console.log(res);
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: res.body.message,
-          showConfirmButton: false,
-          timer: 2500,
-        });
-        this.getDetailJobMappings();
-      },
-      (err) => {
-        console.log(err);
-        const Toast = Swal.mixin({
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000,
+    this.services
+      .postJob('jobMapping/activationMappingJob', parameter)
+      .subscribe(
+        (res) => {
+          console.log(res);
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: res.body.message,
+            showConfirmButton: false,
+            timer: 2500,
+          });
+          this.getDetailJobMappings();
+        },
+        (err) => {
+          console.log(err);
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
 
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-          },
-        });
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer);
+              toast.addEventListener('mouseleave', Swal.resumeTimer);
+            },
+          });
 
-        Toast.fire({
-          icon: 'error',
-          title: 'Service Unavailable',
-        });
-      }
-    );
+          Toast.fire({
+            icon: 'error',
+            title: 'Service Unavailable',
+          });
+        }
+      );
   }
 
   closeDetailJob() {

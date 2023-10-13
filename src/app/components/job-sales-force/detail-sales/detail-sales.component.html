@@ -168,7 +168,7 @@
                         mat-flat-button
                         color="warn"
                         class="button-non-aktifkan"
-                        *ngIf="element.deleted == '1'"
+                        *ngIf="element.deleted == '0'"
                         (click)="changeStatusDelete(element)"
                       >
                         Non Aktifkan
@@ -177,7 +177,7 @@
                         mat-flat-button
                         color="primary"
                         class="button-aktifkan"
-                        *ngIf="element.deleted == '0'"
+                        *ngIf="element.deleted == '1'"
                         (click)="changeStatusDelete(element)"
                       >
                         Aktifkan
