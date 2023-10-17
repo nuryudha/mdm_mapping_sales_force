@@ -8,7 +8,10 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { listSalesForce } from 'src/app/models/job-sales-force-models/detail-sales-models/detail-sales-models';
+import {
+  listChannel,
+  listSalesForce,
+} from 'src/app/models/job-sales-force-models/detail-sales-models/detail-sales-models';
 import { TambahMappingSalesComponent } from './tambah-mapping-sales/tambah-mapping-sales.component';
 import { MainService } from 'src/app/services/main.service';
 import { MatSort } from '@angular/material/sort';
@@ -31,13 +34,16 @@ export class DetailSalesComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any // Akses data dari tombol dialog
   ) {}
 
-  ngOnInit(): void {
+  //! await berfungsi untuk mengutamakan proses berjalan
+  async ngOnInit() {
+    // ketika mau menggunakan await maka perlu di async dan tidak bisa menggunakan void
     this.formDetailSales();
+    this.printIPAddress();
     this.dataSource = new MatTableDataSource(
       this.dataYangDitampilkan_ListSalesForce
     );
+    await this.getListChannel(); // harus async untuk menggunakan await.
     this.getDetailJobMappings();
-    this.printIPAddress();
   }
 
   ngAfterViewInit() {
@@ -52,14 +58,19 @@ export class DetailSalesComponent implements OnInit {
 
   displayedColumns: string[] = [
     'no',
-    'channelCodeDesc',
+    'channelDesc',
     'salesForceTypeDesc',
+    'status',
     'action',
   ];
 
   form!: FormGroup;
   dataSource!: MatTableDataSource<listSalesForce>;
   dataYangDitampilkan_ListSalesForce: listSalesForce[] = [];
+  dataYangDitampilkan_listChannel: listChannel[] = [];
+  isLoading: any;
+  noData: any;
+  error: any;
 
   formDetailSales() {
     this.form = this.formBuilder.group({
@@ -99,39 +110,76 @@ export class DetailSalesComponent implements OnInit {
       );
   }
 
+  async getListChannel() {
+    // sebelum menggunakan await harus di async dulu
+    this.dataYangDitampilkan_listChannel = [];
+    try {
+      const res = await this.services
+        .getJob('jobMapping/getChannelCode')
+        .toPromise();
+      console.log(res);
+      res.body.data.forEach((element: any) => {
+        this.dataYangDitampilkan_listChannel.push({
+          listChannel_ChannelCode: element.channelCode,
+          listChannel_ChannelDesc: element.channelDesc,
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      // Handle error jika diperlukan
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+      });
+
+      Toast.fire({
+        icon: 'error',
+        title: 'Service Unavailable',
+      });
+    }
+  }
+
   getDetailJobMappings() {
+    this.noData = false;
+    this.isLoading = true;
+    this.error = false;
+
     this.dataYangDitampilkan_ListSalesForce = [];
     let channelCodeDesc: any;
     let salesForceTypeDesc: any;
+    let deletedDesc: string;
     let parameter = {
       salesJobCode: this.data.jobCode,
     };
+
     this.services
       .postJob('jobMapping/getDetailJobMapping', parameter)
       .subscribe(
         (res) => {
           console.log(res);
           res.body.data.forEach((element: any, index: number) => {
-            if (element.channelCode == '01') {
-              channelCodeDesc = 'DEALER';
-            } else if (element.channelCode == '02') {
-              channelCodeDesc = 'BMRI';
-            } else if (element.channelCode == '03') {
-              channelCodeDesc = 'MITRA MANDIRI';
-            } else if (element.channelCode == '04') {
-              channelCodeDesc = 'MUF';
-            } else if (element.channelCode == '07') {
-              channelCodeDesc = 'GROUP CUSTOMER';
-            } else if (element.channelCode == '09') {
-              channelCodeDesc = 'PERMATA';
-            } else if (element.channelCode == '08') {
-              channelCodeDesc = 'RESTRUCTURE';
+            let hasilPencocokanChannelCode =
+              this.dataYangDitampilkan_listChannel.find(
+                (element_listChannel) =>
+                  element_listChannel.listChannel_ChannelCode ===
+                  element.channelCode
+              );
+            if (hasilPencocokanChannelCode) {
+              channelCodeDesc =
+                hasilPencocokanChannelCode.listChannel_ChannelDesc;
             } else {
-              channelCodeDesc = 'UNKNOWN';
+              channelCodeDesc = 'ERROR';
             }
 
             if (element.salesForceType == '1') {
-              salesForceTypeDesc = 'INTERNAL';
+              salesForceTypeDesc = 'INTERNAL 1';
             } else if (element.salesForceType == '2') {
               salesForceTypeDesc = 'EXTERNAL 1';
             } else if (element.salesForceType == '3') {
@@ -141,21 +189,34 @@ export class DetailSalesComponent implements OnInit {
             } else if (element.salesForceType == '5') {
               salesForceTypeDesc = 'EXTERNAL 3';
             } else if (element.salesForceType == '6') {
-              salesForceTypeDesc = 'INTERNAL 2,';
+              salesForceTypeDesc = 'INTERNAL 2';
             } else if (element.salesForceType == '7') {
               salesForceTypeDesc = 'INTERNAL 3';
             } else {
-              salesForceTypeDesc = 'UNKNOWN';
+              salesForceTypeDesc = 'ERROR';
+            }
+
+            if (element.deleted == '0') {
+              deletedDesc = 'Aktif';
+            } else if (element.deleted == '1') {
+              deletedDesc = 'Non Aktif';
+            } else {
+              deletedDesc = 'ERROR';
             }
             this.dataYangDitampilkan_ListSalesForce.push({
               no: index + 1,
-              channelCodeDesc: channelCodeDesc,
+              channelDesc: channelCodeDesc,
               channelCode: element.channelCode,
               salesForceTypeDesc: salesForceTypeDesc,
               salesForceType: element.salesForceType,
               deleted: element.deleted,
+              deletedDesc: deletedDesc,
             });
           });
+
+          this.noData = true;
+          this.isLoading = false;
+          this.error = false;
 
           this.dataSource = new MatTableDataSource(
             this.dataYangDitampilkan_ListSalesForce
@@ -164,6 +225,27 @@ export class DetailSalesComponent implements OnInit {
         },
         (err) => {
           console.log(err);
+
+          this.noData = false;
+          this.isLoading = false;
+          this.error = true;
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer);
+              toast.addEventListener('mouseleave', Swal.resumeTimer);
+            },
+          });
+
+          Toast.fire({
+            icon: 'error',
+            title: 'Service Unavailable',
+          });
         }
       );
   }
@@ -177,7 +259,7 @@ export class DetailSalesComponent implements OnInit {
         icon: 'question',
         title: 'Apakah anda yakin ingin menonaktifkan ?',
         html: `
-        Channel Code: ${status.channelCodeDesc} <br>
+        Channel Code: ${status.channelDesc} <br>
         Sales Type: ${status.salesForceTypeDesc}
       `,
         showConfirmButton: true,
@@ -199,7 +281,7 @@ export class DetailSalesComponent implements OnInit {
         icon: 'question',
         title: 'Apakah anda yakin ingin mengaktifkan ?',
         html: `
-        Channel Code: ${status.channelCodeDesc} <br>
+        Channel Code: ${status.channelDesc} <br>
         Sales Type: ${status.salesForceTypeDesc}
       `,
         showConfirmButton: true,

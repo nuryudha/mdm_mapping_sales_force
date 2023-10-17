@@ -241,6 +241,10 @@ th.text-header {
   pointer-events: none;
 }
 
+.element-error {
+  background-color: rgb(187, 187, 187);
+}
+
 .btn-delete {
   color: #f44a3e;
 }
@@ -258,4 +262,7 @@ th.text-header {
 
 .custom-dialog {
   overflow: auto; /* Munculkan scrollbar jika diperlukan */
+}
+.faded {
+  color: rgb(187, 187, 187);
 }

@@ -22,7 +22,7 @@
             formControlName="channelCode"
           >
             <mat-select-filter
-              [displayMember]="'channelCodeDesc'"
+              [displayMember]="'channelDesc'"
               [array]="dataOption_ListChannelCode"
               (filteredReturn)="filteredListChannelCode = $event"
             >
@@ -31,9 +31,12 @@
               *ngFor="let option of filteredListChannelCode"
               [value]="option.channelCode"
             >
-              {{ option.channelCodeDesc }}
+              {{ option.channelDesc }}
             </mat-option>
           </mat-select>
+          <mat-error *ngIf="form.controls.channelCode.hasError('required')"
+            >Harus dipilih !
+          </mat-error>
         </mat-form-field>
       </div>
     </div>
@@ -61,6 +64,9 @@
               {{ option.salesForceTypeDesc }}
             </mat-option>
           </mat-select>
+          <mat-error *ngIf="form.controls.salesForce.hasError('required')"
+            >Harus dipilih !
+          </mat-error>
         </mat-form-field>
       </div>
     </div>

@@ -56,7 +56,7 @@ export class TambahMappingSalesComponent implements OnInit {
         res.body.data.forEach((element: any) => {
           arrayDataOption_ListChannelCode.push({
             channelCode: element.channelCode,
-            channelCodeDesc: element.channelDesc,
+            channelDesc: element.channelDesc,
           });
         });
         this.dataOption_ListChannelCode = arrayDataOption_ListChannelCode;
@@ -73,7 +73,15 @@ export class TambahMappingSalesComponent implements OnInit {
       // ! Hard Code
       {
         salesForceType: '1',
-        salesForceTypeDesc: 'INTERNAL',
+        salesForceTypeDesc: 'INTERNAL 1',
+      },
+      {
+        salesForceType: '6',
+        salesForceTypeDesc: 'INTERNAL 2',
+      },
+      {
+        salesForceType: '7',
+        salesForceTypeDesc: 'INTERNAL 3',
       },
       {
         salesForceType: '2',
@@ -84,20 +92,12 @@ export class TambahMappingSalesComponent implements OnInit {
         salesForceTypeDesc: 'EXTERNAL 2',
       },
       {
-        salesForceType: '4',
-        salesForceTypeDesc: 'MITRA',
-      },
-      {
         salesForceType: '5',
         salesForceTypeDesc: 'EXTERNAL 3',
       },
       {
-        salesForceType: '6',
-        salesForceTypeDesc: 'INTERNAL 2',
-      },
-      {
-        salesForceType: '7',
-        salesForceTypeDesc: 'INTERNAL 3',
+        salesForceType: '4',
+        salesForceTypeDesc: 'MITRA',
       },
     ];
     this.dataOption_SalesForceType = arrayDataOption_SalesForceType;

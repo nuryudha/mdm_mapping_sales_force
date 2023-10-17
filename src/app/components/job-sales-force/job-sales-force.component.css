@@ -119,6 +119,10 @@ th.text-header {
   pointer-events: none;
 }
 
+.element-error {
+  color: rgb(187, 187, 187);
+}
+
 .custom-dialog {
   overflow: auto; /* Munculkan scrollbar jika diperlukan */
 }

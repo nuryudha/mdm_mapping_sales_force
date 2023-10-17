@@ -1,6 +1,11 @@
 export interface listAllJob {
   jobCode: string;
   jobDesc: any;
-  comId: string;
+  comDesc: string;
   jobStatus: string;
+}
+
+export interface listCompany {
+  companyCode: string;
+  companyDesc: string;
 }

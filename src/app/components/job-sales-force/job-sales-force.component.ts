@@ -1,5 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import {
+  listAllJob,
+  listCompany,
+} from 'src/app/models/job-sales-force-models/job-sales-force-models';
 
 import { DetailSalesComponent } from './detail-sales/detail-sales.component';
 import { MainService } from 'src/app/services/main.service';
@@ -8,8 +12,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import Swal from 'sweetalert2';
 import { Title } from '@angular/platform-browser';
-import { ViewportRuler } from '@angular/cdk/scrolling';
-import { listAllJob } from 'src/app/models/job-sales-force-models/job-sales-force-models';
 
 @Component({
   selector: 'app-job-sales-force',
@@ -20,8 +22,7 @@ export class JobSalesForceComponent implements OnInit {
   constructor(
     private title: Title,
     private dialog: MatDialog,
-    private services: MainService,
-    private viewportRuler: ViewportRuler
+    private services: MainService
   ) {}
 
   ngOnInit(): void {
@@ -29,6 +30,7 @@ export class JobSalesForceComponent implements OnInit {
       this.dataYangDitampilkan_ListAllJob
     );
     this.title.setTitle('Mapping Sales Force');
+    this.getCompanyCode();
     this.getListAllJob();
   }
 
@@ -43,7 +45,7 @@ export class JobSalesForceComponent implements OnInit {
   displayedColumns: string[] = [
     'jobCode',
     'jobDesc',
-    'comId',
+    'comDesc',
     'jobStatus',
     'action',
   ];
@@ -51,18 +53,31 @@ export class JobSalesForceComponent implements OnInit {
   dataSource!: MatTableDataSource<listAllJob>;
   dataYangDitampilkan_ListAllJob: listAllJob[] = [];
   searchJobText: any;
+  dataYangDitampilkan_listCompany: listCompany[] = [];
+  isLoading: any;
+  noData: any;
+  error: any;
 
   searchJobs() {
     this.dataSource.filter = this.searchJobText.trim().toLowerCase();
+    if (this.dataSource.filteredData.length === 0) {
+      this.noData = true;
+      this.isLoading = false;
+      this.error = false;
+    }
   }
   onSearchChange() {
     if (this.searchJobText === '') this.getListAllJob();
   }
 
   getListAllJob() {
+    this.noData = false;
+    this.isLoading = true;
+    this.error = false;
+
     let jobStatus: any;
     let jobDesc: any;
-    let comId: any;
+    let comDesc: any;
     this.dataYangDitampilkan_ListAllJob = []; // biar ga duplikasi saat di refresh
     this.services.getJob('job').subscribe(
       (res) => {
@@ -84,19 +99,31 @@ export class JobSalesForceComponent implements OnInit {
             jobDesc = 'ERROR';
           }
 
-          if (element.emplComId != null) {
-            comId = element.emplComId;
+          // Mencari companyCode yang sesuai
+          let hasilPencocokanCompanyCode =
+            this.dataYangDitampilkan_listCompany.find(
+              (element_listCompany) =>
+                element_listCompany.companyCode == element.emplComId
+            );
+
+          if (hasilPencocokanCompanyCode) {
+            comDesc = hasilPencocokanCompanyCode.companyDesc;
           } else {
-            comId = 'ERROR';
+            comDesc = 'ERROR';
           }
 
           this.dataYangDitampilkan_ListAllJob.push({
             jobCode: element.emplJobCode,
             jobDesc: jobDesc,
-            comId: comId,
+            comDesc: comDesc,
             jobStatus: jobStatus,
           });
         });
+
+        this.noData = true;
+        this.isLoading = false;
+        this.error = false;
+
         this.dataSource = new MatTableDataSource(
           this.dataYangDitampilkan_ListAllJob
         );
@@ -104,6 +131,62 @@ export class JobSalesForceComponent implements OnInit {
       },
       (err) => {
         console.log(err);
+
+        this.noData = false;
+        this.isLoading = false;
+        this.error = true;
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({
+          icon: 'error',
+          title: 'Service Unavailable',
+        });
+      }
+    );
+  }
+
+  getCompanyCode() {
+    this.dataYangDitampilkan_listCompany = [];
+    this.services.getJob('job/getCompany').subscribe(
+      (res) => {
+        console.log(res);
+        res.body.data.forEach((element: any) => {
+          this.dataYangDitampilkan_listCompany.push({
+            companyCode: element.companyCode,
+            companyDesc: element.companyDesc,
+          });
+        });
+      },
+      (err) => {
+        console.log(err);
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({
+          icon: 'error',
+          title: 'Service Unavailable',
+        });
       }
     );
   }
@@ -114,7 +197,6 @@ export class JobSalesForceComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.panelClass = 'custom-dialog';
     dialogConfig.width = '55%';
-    // dialogConfig.height = '90%';
     dialogConfig.data = element; // Mengirimkan elemen ke dialog menggunakan properti 'data'
     this.dialog
       .open(DetailSalesComponent, dialogConfig)
