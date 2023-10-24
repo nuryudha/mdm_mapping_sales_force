@@ -55,7 +55,8 @@ export class TambahMappingSalesComponent implements OnInit {
         let arrayDataOption_ListChannelCode: listChannelCode[] = [];
         res.body.data.forEach((element: any) => {
           arrayDataOption_ListChannelCode.push({
-            channelCode: element.channelCode,
+            channelComId: element.channelComId,
+            channelId: element.channelId,
             channelDesc: element.channelDesc,
           });
         });

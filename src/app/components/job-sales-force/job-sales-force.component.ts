@@ -103,11 +103,11 @@ export class JobSalesForceComponent implements OnInit {
           let hasilPencocokanCompanyCode =
             this.dataYangDitampilkan_listCompany.find(
               (element_listCompany) =>
-                element_listCompany.companyCode == element.emplComId
+                element_listCompany.channelComId == element.emplComId
             );
 
           if (hasilPencocokanCompanyCode) {
-            comDesc = hasilPencocokanCompanyCode.companyDesc;
+            comDesc = hasilPencocokanCompanyCode.channelDesc;
           } else {
             comDesc = 'ERROR';
           }
@@ -158,13 +158,14 @@ export class JobSalesForceComponent implements OnInit {
 
   getCompanyCode() {
     this.dataYangDitampilkan_listCompany = [];
-    this.services.getJob('job/getCompany').subscribe(
+    this.services.getJob('jobMapping/getChannelCode').subscribe(
       (res) => {
         console.log(res);
         res.body.data.forEach((element: any) => {
           this.dataYangDitampilkan_listCompany.push({
-            companyCode: element.companyCode,
-            companyDesc: element.companyDesc,
+            channelId: element.channelId,
+            channelComId: element.channelComId,
+            channelDesc: element.channelDesc,
           });
         });
       },

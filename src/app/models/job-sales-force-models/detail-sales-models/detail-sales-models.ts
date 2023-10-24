@@ -9,6 +9,7 @@ export interface listSalesForce {
 }
 
 export interface listChannel {
-  listChannel_ChannelDesc: string;
-  listChannel_ChannelCode: string;
+  channelId: number;
+  channelComId: string;
+  channelDesc: string;
 }

@@ -120,8 +120,9 @@ export class DetailSalesComponent implements OnInit {
       console.log(res);
       res.body.data.forEach((element: any) => {
         this.dataYangDitampilkan_listChannel.push({
-          listChannel_ChannelCode: element.channelCode,
-          listChannel_ChannelDesc: element.channelDesc,
+          channelId: element.channelId,
+          channelComId: element.channelCodeDesc,
+          channelDesc: element.channelDesc,
         });
       });
     } catch (err) {
@@ -168,12 +169,10 @@ export class DetailSalesComponent implements OnInit {
             let hasilPencocokanChannelCode =
               this.dataYangDitampilkan_listChannel.find(
                 (element_listChannel) =>
-                  element_listChannel.listChannel_ChannelCode ===
-                  element.channelCode
+                  element_listChannel.channelId === element.channelCode
               );
             if (hasilPencocokanChannelCode) {
-              channelCodeDesc =
-                hasilPencocokanChannelCode.listChannel_ChannelDesc;
+              channelCodeDesc = hasilPencocokanChannelCode.channelDesc;
             } else {
               channelCodeDesc = 'ERROR';
             }

@@ -6,6 +6,7 @@ export interface listAllJob {
 }
 
 export interface listCompany {
-  companyCode: string;
-  companyDesc: string;
+  channelId: number;
+  channelComId: string;
+  channelDesc: string;
 }
